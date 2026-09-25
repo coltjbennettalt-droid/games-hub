@@ -1,0 +1,9 @@
+{
+  "name": "Colton's Project Launcher",
+  "short_name": "Project Launcher",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#000080",
+  "theme_color": "#000080",
+  "description": "A browser-based Windows 95-style launcher for games, tools, experiments, and chat."
+}

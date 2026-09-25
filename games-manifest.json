@@ -1,0 +1,166 @@
+{
+  "version": "generated",
+  "generatedAt": "2026-09-25",
+  "games": [
+    {
+      "title": "FPS beta",
+      "path": "games/fps.html",
+      "thumbnail": "images/missing.png",
+      "type": "FPS",
+      "status": "beta",
+      "isSwf": false
+    },
+    {
+      "title": "Pixel Ops",
+      "path": "games/pixel-ops.html",
+      "thumbnail": "images/IMG_1941.jpeg",
+      "type": "FPS",
+      "status": "complete",
+      "isSwf": false
+    },
+    {
+      "title": "Ghengis Khan Simulator",
+      "path": "games/ghengis.html",
+      "thumbnail": "images/IMG_1987.jpeg",
+      "type": "Simulation",
+      "status": "complete",
+      "isSwf": false
+    },
+    {
+      "title": "MEGALITH",
+      "path": "games/megalith.html",
+      "thumbnail": "images/IMG_1923.jpeg",
+      "type": "Endless",
+      "status": "complete",
+      "isSwf": false
+    },
+    {
+      "title": "City Striker",
+      "path": "games/city-striker.html",
+      "thumbnail": "images/IMG_1891.jpeg",
+      "type": "Driving",
+      "status": "complete",
+      "isSwf": false
+    },
+    {
+      "title": "Chronostrike",
+      "path": "games/chronostrike.html",
+      "thumbnail": "images/IMG_1605.jpeg",
+      "type": "FPS",
+      "status": "complete",
+      "isSwf": false
+    },
+    {
+      "title": "Labyrinthine",
+      "path": "games/labyrinthine.html",
+      "thumbnail": "images/IMG_1922.jpeg",
+      "type": "Horror",
+      "status": "wipBuggy",
+      "isSwf": false
+    },
+    {
+      "title": "Goblin Hut Clicker",
+      "path": "games/gh-clicker.html",
+      "thumbnail": "images/IMG_1677.jpeg",
+      "type": "Clicker",
+      "status": "complete",
+      "isSwf": false
+    },
+    {
+      "title": "Legacy Racing Sim",
+      "path": "games/legacysim.html",
+      "thumbnail": "images/IMG_1669.jpeg",
+      "type": "Racing",
+      "status": "legacy",
+      "isSwf": false
+    },
+    {
+      "title": "Royal Clash",
+      "path": "games/clash.html",
+      "thumbnail": "images/IMG_1002.jpeg",
+      "type": "Tower Defense",
+      "status": "legacy",
+      "isSwf": false
+    },
+    {
+      "title": "Engine Sim",
+      "path": "games/enginesim.html",
+      "thumbnail": "images/IMG_1691.jpeg",
+      "type": "Sim",
+      "status": "beta",
+      "isSwf": false
+    },
+    {
+      "title": "Warzone",
+      "path": "games/warzone.html",
+      "thumbnail": "images/IMG_1723.jpeg",
+      "type": "Military",
+      "status": "wipBuggy",
+      "isSwf": false
+    },
+    {
+      "title": "Gang Wars",
+      "path": "games/gangwars.html",
+      "thumbnail": "images/IMG_1625.jpeg",
+      "type": "Arcade",
+      "status": "wipBuggy",
+      "isSwf": false
+    },
+    {
+      "title": "Racing Sim",
+      "path": "games/badracingsim.html",
+      "thumbnail": "images/IMG_1604.jpeg",
+      "type": "Driving",
+      "status": "abandoned",
+      "isSwf": false
+    },
+    {
+      "title": "Alien Invaders",
+      "path": "games/classics/alieninvaders.html",
+      "thumbnail": "images/IMG_1802.jpeg",
+      "type": "Classic",
+      "status": "",
+      "isSwf": false
+    },
+    {
+      "title": "Break Through",
+      "path": "games/classics/breakthrough.html",
+      "thumbnail": "images/IMG_1806.jpeg",
+      "type": "Classic",
+      "status": "",
+      "isSwf": false
+    },
+    {
+      "title": "Meteors",
+      "path": "games/classics/meteors.html",
+      "thumbnail": "images/IMG_1671.jpeg",
+      "type": "Classic",
+      "status": "",
+      "isSwf": false
+    },
+    {
+      "title": "Neon Pong",
+      "path": "games/classics/neonpong.html",
+      "thumbnail": "images/IMG_1808.jpeg",
+      "type": "Classic",
+      "status": "",
+      "isSwf": false
+    },
+    {
+      "title": "Pellet Muncher",
+      "path": "games/classics/pelletmuncher.html",
+      "thumbnail": "images/IMG_1803.jpeg",
+      "type": "Classic",
+      "status": "",
+      "isSwf": false
+    },
+    {
+      "title": "Snake",
+      "path": "games/classics/snake.html",
+      "thumbnail": "images/IMG_1804.jpeg",
+      "type": "Classic",
+      "status": "",
+      "isSwf": false
+    }
+  ]
+}
