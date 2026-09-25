@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>File Explorer</title>
+<link rel="stylesheet" href="../styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+<script src="../ghcore.js"></script>
+<style>
+body{background:#c0c0c0;color:#000;padding:7px;font-family:W95FA,"MS Sans Serif",sans-serif;overflow:hidden}
+.explorer{height:100%;display:flex;flex-direction:column;gap:6px}.toolbar,.status{display:flex;align-items:center;gap:5px}.toolbar{flex-wrap:wrap}.path{flex:1;background:#fff;border:2px inset #808080;padding:4px 6px;font-family:monospace;min-width:160px}.body{flex:1;min-height:0;display:grid;grid-template-columns:1fr 260px;gap:6px}.files{background:#fff;border:2px inset #808080;overflow:auto}.file-row{display:grid;grid-template-columns:28px 1fr 80px;gap:6px;align-items:center;padding:5px;border-bottom:1px solid #ddd;cursor:default}.file-row:hover{background:#000080;color:#fff}.file-row.selected{background:#000080;color:#fff}.preview{background:#c0c0c0;border:2px inset #808080;padding:6px;overflow:auto}.preview-content{background:#fff;border:2px inset #808080;padding:6px;min-height:120px;white-space:pre-wrap;overflow-wrap:anywhere}.muted{opacity:.7;font-size:11px}.danger{color:#900}@media(max-width:700px){.body{grid-template-columns:1fr}.preview{display:none}}
+</style></head><body>
+<div class="explorer">
+  <div class="toolbar"><button id="new-text">New Text File</button><button id="import">Import</button><button id="download">Download</button><button id="delete" class="danger">Delete</button><div class="path">My Computer / Documents</div><input id="import-input" type="file" hidden></div>
+  <div class="body"><div id="file-list" class="files"></div><div class="preview"><b>File Preview</b><div id="preview" class="preview-content" style="margin-top:6px">Select a file.</div><div id="meta" class="muted" style="margin-top:6px"></div></div></div>
+  <div class="status"><span id="count">0 files</span><span style="margin-left:auto" id="size">0 bytes</span></div>
+</div>
+<script>
+(async function(){const core=window.parent.GHCore||window.GHCore;await core.boot();const $=id=>document.getElementById(id);let files=[];let selected=null;
+function fmtBytes(n){if(!n)return '0 B';const u=['B','KB','MB','GB'];const i=Math.min(u.length-1,Math.floor(Math.log(n)/Math.log(1024)));return (n/Math.pow(1024,i)).toFixed(i?1:0)+' '+u[i];}
+async function refresh(){files=await core.fileList();$('file-list').innerHTML='';for(const f of files){const row=document.createElement('div');row.className='file-row'+(selected&&selected.id===f.id?' selected':'');row.innerHTML=`<div>${f.kind==='text'?'TXT':'▧'}</div><div title="${f.name.replace(/"/g,'&quot;')}">${f.name}</div><div>${fmtBytes(f.size)}</div>`;row.onclick=()=>select(f);$('file-list').appendChild(row);}const total=files.reduce((s,f)=>s+f.size,0);$('count').textContent=files.length+' file'+(files.length===1?'':'s');$('size').textContent=fmtBytes(total);if(!files.length){$('file-list').innerHTML='<div style="padding:15px;text-align:center">No files in the local cabinet.</div>';}}
+async function select(f){selected=f;$('preview').textContent='Loading...';$('meta').textContent=`${f.mime} · ${fmtBytes(f.size)} · modified ${new Date(f.modifiedAt).toLocaleString()}`;const blob=await core.readFile(f);if(!blob){$('preview').textContent='Unable to read file.';return;}if(f.mime.startsWith('text/')||f.name.match(/\.(txt|md|json|csv|log|js|html|css)$/i)){try{$('preview').textContent=await blob.text();}catch{$('preview').textContent='Text preview unavailable.';}}else{$('preview').textContent='Binary file. Use Download to save it.';}refresh();}
+$('new-text').onclick=async()=>{const name=prompt('File name','notes.txt');if(!name)return;const text=prompt('File contents','');const f=await core.saveFile(new Blob([text||''],{type:'text/plain'}),{name:name.replace(/[^\w. -]/g,'_'),mime:'text/plain',kind:'text'});await refresh();select(f);};
+$('import').onclick=()=>$('import-input').click();
+$('import-input').onchange=async e=>{for(const file of e.target.files||[]){await core.saveFile(file,{name:file.name,mime:file.type||'application/octet-stream',kind:file.type?.startsWith('text/')?'text':'file'});}if(e.target.files?.length){const stats=await core.getStats();stats.filesImported=(stats.filesImported||0)+e.target.files.length;await core.store.set('stats',stats);await core.unlock('file_import');}e.target.value='';refresh();};
+$('download').onclick=async()=>{if(!selected){alert('Select a file first.');return;}const blob=await core.readFile(selected);const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=selected.name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
+$('delete').onclick=async()=>{if(!selected)return;if(confirm('Move this file to the Recycle Bin?')){await core.deleteFile(selected.id);selected=null;$('preview').textContent='Select a file.';$('meta').textContent='';refresh();}};
+core.events.addEventListener('file:changed',refresh);refresh();
+})();
+</script></body></html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>System Center</title>
+<link rel="stylesheet" href="../styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+<script src="../ghcore.js"></script>
+<style>
+  body{background:#c0c0c0;color:#000;padding:8px;overflow:auto;font-family:W95FA,"MS Sans Serif",sans-serif}
+  .system-grid{display:grid;grid-template-columns:150px 1fr;gap:8px;min-height:100%}
+  .tabs,.side-box{border:2px inset #808080;background:#c0c0c0;padding:4px}
+  .tabs button{width:100%;margin-bottom:4px;text-align:left}
+  .tabs button.active{background:#000080;color:#fff}
+  .tab-pane{display:none}.tab-pane.active{display:block}
+  .inset{background:#fff;border:2px inset #808080;padding:8px}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:6px 0}
+  .row input[type=text]{flex:1;min-width:0}
+  .stat-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .stat{background:#fff;border:2px inset #808080;padding:7px}.stat b{display:block;font-size:18px}
+  .achievement{display:flex;gap:8px;align-items:center;background:#fff;border:2px inset #808080;padding:6px;margin:4px 0}.achievement.locked{opacity:.45}.achievement-icon{font-size:22px;width:26px;text-align:center}
+  .small{font-size:11px}.mono{font-family:monospace}.danger{color:#900}.ok{color:#060}
+  button{font-family:W95FA,"MS Sans Serif",sans-serif}
+  @media(max-width:650px){.system-grid{grid-template-columns:1fr}.tabs{display:grid;grid-template-columns:repeat(3,1fr)}.tabs button{margin:0}.stat-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="system-grid">
+  <div class="tabs">
+    <button data-tab="profile" class="active">Profile</button>
+    <button data-tab="appearance">Appearance</button>
+    <button data-tab="storage">Storage</button>
+    <button data-tab="achievements">Achievements</button>
+    <button data-tab="diagnostics">Diagnostics</button>
+    <button data-tab="taskmanager">Task Manager</button>
+    <button data-tab="about">About</button>
+  </div>
+  <div>
+    <section id="profile" class="tab-pane active">
+      <div class="panel"><div class="panel-title-bar"><span>LOCAL PROFILE</span></div><div class="panel-body">
+        <div class="row"><label for="username">Username</label><input id="username" type="text" maxlength="24"></div>
+        <div class="row"><label for="title">Title</label><input id="title" type="text" maxlength="32"></div>
+        <div class="row"><label for="status">Status</label><select id="status"><option>Online</option><option>AFK</option><option>DND</option></select></div>
+        <div class="inset mono small" id="profile-id"></div>
+        <div class="row"><button id="save-profile">Save Profile</button><button id="export-backup">Export Full Backup</button><button id="import-backup">Import Backup</button></div>
+        <input id="backup-file" type="file" accept="application/json,.json" hidden>
+        <div class="inset"><b>What this is:</b> a browser-local identity. It is stored in IndexedDB through localForage and is not an online account.</div>
+      </div></div>
+    </section>
+
+    <section id="appearance" class="tab-pane">
+      <div class="panel"><div class="panel-title-bar"><span>DESKTOP SETTINGS</span></div><div class="panel-body">
+        <div class="row"><label>Theme</label><select id="theme"><option value="classic">Classic Windows</option><option value="dos">DOS Terminal</option><option value="green">Green CRT</option><option value="amber">Amber CRT</option><option value="industrial">Industrial</option><option value="modern">Modern Gray</option></select></div>
+        <div class="row"><label>CRT effects</label><input id="crt" type="checkbox"></div>
+        <div class="row"><label>Reduced motion</label><input id="reduced-motion" type="checkbox"></div>
+        <div class="row"><label>System sounds</label><input id="sounds" type="checkbox"></div>
+        <div class="row"><label>24-hour clock</label><input id="clock24" type="checkbox"></div>
+        <div class="row"><label>Performance mode</label><input id="performance" type="checkbox"></div>
+        <button id="save-settings">Apply Settings</button>
+      </div></div>
+    </section>
+
+    <section id="storage" class="tab-pane">
+      <div class="panel"><div class="panel-title-bar"><span>STORAGE</span></div><div class="panel-body">
+        <div class="stat-grid" id="storage-stats"></div>
+        <div class="row"><button id="refresh-storage">Refresh</button><button id="clear-notifications">Clear Notifications</button><button id="factory-reset" class="danger">Factory Reset</button></div>
+        <div class="inset small">Game saves, notes, profiles, settings, achievements, notifications, and imported local files can persist here. Clearing browser site data will also remove them.</div>
+      </div></div>
+    </section>
+
+    <section id="achievements" class="tab-pane">
+      <div class="panel"><div class="panel-title-bar"><span>ACHIEVEMENTS</span></div><div class="panel-body"><div id="achievement-list"></div></div></div>
+    </section>
+
+    <section id="diagnostics" class="tab-pane">
+      <div class="panel"><div class="panel-title-bar"><span>DIAGNOSTICS</span></div><div class="panel-body">
+        <div class="inset mono small" id="diagnostic-output"></div>
+        <div class="row"><button id="run-diagnostics">Run Test</button><button id="developer-unlock">Unlock Developer Mode</button></div>
+      </div></div>
+    </section>
+
+    <section id="taskmanager" class="tab-pane">
+      <div class="panel"><div class="panel-title-bar"><span>TASK MANAGER</span></div><div class="panel-body">
+        <div class="inset small mono" id="task-list"></div>
+        <div class="row"><button id="refresh-tasks">Refresh</button><button id="minimize-all">Minimize All</button><button id="show-all">Restore All</button></div>
+      </div></div>
+    </section>
+
+    <section id="about" class="tab-pane">
+      <div class="panel"><div class="panel-title-bar"><span>ABOUT THIS COMPUTER</span></div><div class="panel-body">
+        <div class="inset"><h2 style="margin-bottom:8px">COLTON'S PROJECT LAUNCHER</h2><p>A serverless browser desktop for games, tools, chat, experiments, and local data.</p><br><p>Core storage: localForage / IndexedDB</p><p>Real-time transport: MQTT</p><p>Peer transport: WebRTC-capable</p><p>Hosting: GitHub Pages</p></div>
+      </div></div>
+    </section>
+  </div>
+</div>
+<script>
+(async function(){
+  const core=window.parent.GHCore||window.GHCore; await core.boot();
+  const $=id=>document.getElementById(id);
+  const tabs=[...document.querySelectorAll('.tabs button')];
+  tabs.forEach(btn=>btn.addEventListener('click',()=>{tabs.forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab-pane').forEach(x=>x.classList.remove('active'));btn.classList.add('active');$(btn.dataset.tab).classList.add('active');}));
+  async function loadProfile(){const p=await core.getProfile();$('username').value=p.username;$('title').value=p.title||'';$('status').value=p.status||'Online';$('profile-id').textContent='LOCAL ID: '+p.id;}
+  async function loadSettings(){const s=await core.getSettings();$('theme').value=s.theme;$('crt').checked=s.crt;$('reduced-motion').checked=s.reducedMotion;$('sounds').checked=s.systemSounds;$('clock24').checked=s.clock24Hour;$('performance').checked=s.performanceMode;}
+  async function refreshStorage(){const keys=await core.store.keys();const files=await core.fileList();const est=await core.estimateStorage();$('storage-stats').innerHTML=`<div class="stat"><b>${keys.length}</b>Core keys</div><div class="stat"><b>${files.length}</b>Local files</div><div class="stat"><b>${((est.usage||0)/1024/1024).toFixed(2)} MB</b>Estimated used</div><div class="stat"><b>${est.quota?((est.quota)/1024/1024).toFixed(0)+' MB':'n/a'}</b>Quota</div>`;}
+  function renderTasks(){const holder=$('task-list');const wins=[...window.parent.document.querySelectorAll('.floating-window')];if(!wins.length){holder.textContent='No floating applications are currently open.';return;}holder.innerHTML='';wins.forEach(win=>{const title=win.querySelector('.applet-win-title')?.textContent.trim()||win.id;const hidden=win.hidden||win.classList.contains('minimized');const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #ccc';row.innerHTML=`<span style="width:8px;height:8px;background:${hidden?'#808080':'#008000'};display:inline-block"></span><span style="flex:1">${title}</span><span>${hidden?'MINIMIZED':'RUNNING'}</span>`;const b=document.createElement('button');b.textContent='Focus';b.onclick=()=>{win.hidden=false;win.classList.remove('minimized');win.style.zIndex=2147483640;};row.appendChild(b);holder.appendChild(row);});}
+  async function loadAchievements(){const unlocked=await core.getAchievements();$('achievement-list').innerHTML='';Object.entries(core.achievementDefs).forEach(([id,d])=>{const u=unlocked[id];const el=document.createElement('div');el.className='achievement'+(u?'':' locked');el.innerHTML=`<div class="achievement-icon">${d.icon}</div><div><b>${d.title}</b><div class="small">${d.description}</div><div class="small">${u?'Unlocked '+new Date(u.unlockedAt).toLocaleString():'Locked'}</div></div>`;$('achievement-list').appendChild(el);});}
+  function diagnosticValue(name,val){return `${name.padEnd(22,'.')} ${val}`;}
+  async function runDiagnostics(){const rows=[];rows.push(diagnosticValue('User agent',navigator.userAgent));rows.push(diagnosticValue('Screen',`${screen.width}×${screen.height} @${devicePixelRatio}x`));rows.push(diagnosticValue('WebGL',!!document.createElement('canvas').getContext('webgl')));rows.push(diagnosticValue('WebGL2',!!document.createElement('canvas').getContext('webgl2')));rows.push(diagnosticValue('WebRTC',!!window.RTCPeerConnection));rows.push(diagnosticValue('Gamepad',!!navigator.getGamepads));rows.push(diagnosticValue('Web Audio',!!window.AudioContext));rows.push(diagnosticValue('Fullscreen',!!document.documentElement.requestFullscreen));rows.push(diagnosticValue('Clipboard',!!navigator.clipboard));rows.push(diagnosticValue('Service Worker',!!navigator.serviceWorker));rows.push(diagnosticValue('BroadcastChannel',!!window.BroadcastChannel));rows.push(diagnosticValue('localForage','available'));$('diagnostic-output').textContent=rows.join('\n');}
+  $('save-profile').onclick=async()=>{await core.setProfile({username:$('username').value.trim()||'Guest',title:$('title').value.trim()||'New User',status:$('status').value});alert('Profile saved locally.');};
+  $('export-backup').onclick=async()=>{const blob=await core.exportBackup();const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='colton-launcher-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
+  $('import-backup').onclick=()=>$('backup-file').click();
+  $('backup-file').onchange=async e=>{if(!e.target.files[0])return;try{await core.importBackup(e.target.files[0]);alert('Backup restored. Reload the launcher to apply everything.');}catch(err){alert('Import failed: '+err.message);}};
+  $('save-settings').onclick=async()=>{await core.setSettings({theme:$('theme').value,crt:$('crt').checked,reducedMotion:$('reduced-motion').checked,systemSounds:$('sounds').checked,clock24Hour:$('clock24').checked,performanceMode:$('performance').checked});if(window.parent.applyGHTheme)window.parent.applyGHTheme();alert('Desktop settings applied.');};
+  $('refresh-storage').onclick=refreshStorage;
+  $('clear-notifications').onclick=async()=>{await core.store.set('notifications',[]);alert('Notifications cleared.');};
+  $('factory-reset').onclick=async()=>{if(confirm('Erase the launcher profile, settings, achievements, saves, and imported files? This cannot be undone.')){await core.resetAll();location.reload();}};
+  $('run-diagnostics').onclick=runDiagnostics;
+  $('refresh-tasks').onclick=renderTasks;
+  $('minimize-all').onclick=()=>{[...window.parent.document.querySelectorAll('.floating-window')].forEach(w=>{w.classList.add('minimized');w.hidden=true;});renderTasks();};
+  $('show-all').onclick=()=>{[...window.parent.document.querySelectorAll('.floating-window')].forEach(w=>{w.hidden=false;w.classList.remove('minimized');});renderTasks();};
+  $('developer-unlock').onclick=async()=>{await core.unlock('developer');alert('Developer achievement unlocked.');loadAchievements();};
+  await loadProfile();await loadSettings();await refreshStorage();await loadAchievements();await runDiagnostics();renderTasks();setInterval(renderTasks,1500);
+})();
+</script>
+</body>
+</html>
